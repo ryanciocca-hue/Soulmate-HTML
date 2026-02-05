@@ -363,8 +363,15 @@
       flex: 1;
       display: flex;
       gap: 0.5rem;
-      justify-content: center;
-      overflow: hidden;
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .thumbnails::-webkit-scrollbar {
+      display: none;
     }
     
     .thumbnail {
