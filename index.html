@@ -867,17 +867,41 @@
       }
     });
 
+    // CAPI helper function
+    function sendCAPI(eventName, customData) {
+      fetch('/api/meta-capi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_name: eventName,
+          event_source_url: window.location.href,
+          user_data: {
+            fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] || null,
+            fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] || null
+          },
+          custom_data: customData
+        })
+      }).catch(function(err) { console.log('CAPI error:', err); });
+    }
+
+    // Send PageView via CAPI on load
+    sendCAPI('PageView');
+
     // Track InitiateCheckout on CTA clicks
     document.querySelectorAll('a[href*="secure.lovmio.com"]').forEach(function(cta) {
       cta.addEventListener('click', function() {
+        var checkoutData = {
+          content_name: 'Sacred Soulmate Bracelet',
+          content_category: 'Jewelry',
+          value: 37.00,
+          currency: 'USD'
+        };
+        // Client-side pixel
         if (typeof fbq === 'function') {
-          fbq('track', 'InitiateCheckout', {
-            content_name: 'Sacred Soulmate Bracelet',
-            content_category: 'Jewelry',
-            value: 37.00,
-            currency: 'USD'
-          });
+          fbq('track', 'InitiateCheckout', checkoutData);
         }
+        // Server-side CAPI
+        sendCAPI('InitiateCheckout', checkoutData);
       });
     });
   </script>
