@@ -887,8 +887,8 @@
     // Send PageView via CAPI on load
     sendCAPI('PageView');
 
-    // Track InitiateCheckout on CTA clicks
-    document.querySelectorAll('a[href*="secure.lovmio.com"]').forEach(function(cta) {
+    // Track InitiateCheckout on CTA clicks (using class selectors since ClickFlare modifies hrefs)
+    document.querySelectorAll('.cta-button, .sticky-cta a').forEach(function(cta) {
       cta.addEventListener('click', function() {
         var checkoutData = {
           content_name: 'Sacred Soulmate Bracelet',
