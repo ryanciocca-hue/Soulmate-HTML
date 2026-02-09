@@ -987,8 +987,10 @@
         var now = Date.now();
         var diff = parseInt(endTime) - now;
         if (diff <= 0) {
-          document.getElementById('countdown-timer').innerHTML = '<span style="color: var(--destructive);">EXPIRED</span>';
-          return;
+          // Reset to 8 hours
+          endTime = Date.now() + (8 * 60 * 60 * 1000);
+          localStorage.setItem(timerKey, endTime);
+          diff = parseInt(endTime) - now;
         }
         var hours = Math.floor(diff / (1000 * 60 * 60));
         var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
