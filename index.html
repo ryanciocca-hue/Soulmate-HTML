@@ -126,7 +126,10 @@
             <p style="font-size: 0.9rem; color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">(Normally $97 - Yours FREE Today)</p>
             <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5;">4 powerful audio sessions that remove the blocks keeping him away while your bracelet broadcasts your frequency</p>
           </div>
-          <p class="pricing-badge" style="margin-top: 1rem;">LIMITED TIME OFFER</p>
+          <div style="margin-top: 1rem; text-align: center;">
+            <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 0.25rem;">OFFER EXPIRES IN:</p>
+            <div id="countdown-timer" style="display: inline-flex; gap: 0.5rem; font-size: 1.5rem; font-weight: 700; color: var(--primary);"></div>
+          </div>
         </div>
         
         <!-- CTA Button -->
@@ -970,6 +973,36 @@
         sendCAPI('InitiateCheckout', checkoutData);
       }
     });
+
+    // 8-hour countdown timer (resets each visit)
+    (function() {
+      var timerKey = 'bogo_timer_end';
+      var endTime = localStorage.getItem(timerKey);
+      if (!endTime || parseInt(endTime) < Date.now()) {
+        endTime = Date.now() + (8 * 60 * 60 * 1000); // 8 hours from now
+        localStorage.setItem(timerKey, endTime);
+      }
+
+      function updateTimer() {
+        var now = Date.now();
+        var diff = parseInt(endTime) - now;
+        if (diff <= 0) {
+          document.getElementById('countdown-timer').innerHTML = '<span style="color: var(--destructive);">EXPIRED</span>';
+          return;
+        }
+        var hours = Math.floor(diff / (1000 * 60 * 60));
+        var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        var secs = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById('countdown-timer').innerHTML =
+          '<span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">' + String(hours).padStart(2, '0') + '</span>' +
+          '<span>:</span>' +
+          '<span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">' + String(mins).padStart(2, '0') + '</span>' +
+          '<span>:</span>' +
+          '<span style="background: var(--primary); color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">' + String(secs).padStart(2, '0') + '</span>';
+      }
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    })();
   </script>
   <script>!function(){"use strict";var n="lp_ref",t="cpid",e="lpurl",c="https://secure.lovmio.com",r="(?<domain>http(?:s?)://[^/]*)".concat("/cf/click"),a="(?:(?:/(?<cta>[1-9][0-9]*)/?)|(?:/))?",i="^".concat(r).concat(a).concat("(?:$|(\\?.*))"),o='javascript:window.clickflare.l="(?<original_link>'.concat(r).concat(a,'("|(\\?[^"]*"))).*'),s=function(){return new RegExp(i,"")},u=function(){return new RegExp(o,"")};function l(n){var t=function(n){return n.replace(s(),(function(n){for(var t=[],e=1;e<arguments.length;e++)t[e-1]=arguments[e];var r=t[t.length-1].domain;return n.replace(r,c)}))}(n);return'javascript:window.clickflare.l="'.concat(t,'"; void 0;')}function d(n,t){if(t&&n&&t.apply(document,[n]),/loaded|interactive|complete/.test(document.readyState))for(var e=0,c=document.links.length;e<c;e++)if(s().test(document.links[e].href)){var r=document.links[e];window.clickflare.links_replaced.has(r)||(r.href=l(r.href),window.clickflare.links_replaced.add(r))}}var f,h,m,p;!function(r,a){var i=document.onreadystatechange;window.clickflare||(window.clickflare={listeners:{},customParams:{},links_replaced:new Set,addEventListener:function(n,t){var e=this.listeners[n]||[];e.includes(t)||e.push(t),this.listeners[n]=e},dispatchEvent:function(n,t){t&&(this.customParams[n]=t),(this.listeners[n]||[]).forEach((function(n){return n(t)}))},push:function(n,t){t&&(this.customParams[n]=t),(this.listeners[n]||[]).forEach((function(n){return n(t)}))}},document.onreadystatechange=function(n){return d(n,i)},d(null,i),setTimeout((function(){!function(r,a){var i,o=function(r,a){var i=new URL("".concat(c).concat(r)),o="{",s=o+o;a.startsWith(s)||i.searchParams.set(t,a);return i.searchParams.append(n,document.referrer),i.searchParams.append(e,location.href),i.searchParams.append("lpt",document.title),i.searchParams.append("t",(new Date).getTime().toString()),i.toString()}(r,a),s=document.createElement("script"),l=document.scripts[0];s.async=1,s.src=o,s.onerror=function(){!function(){for(var n=function(n,t){var e=document.links[n];u().test(decodeURI(e.href))&&setTimeout((function(){e&&e.setAttribute("href",function(n){var t=n.match(u());if(t){var e=(t.groups||{}).original_link;return e?e.slice(0,-1):n}return n}(decodeURI(e.href)))}))},t=0,e=document.links.length;t<e;t++)n(t)}()},null===(i=l.parentNode)||void 0===i||i.insertBefore(s,l)}(r,a)})))}("".concat("/cf/tags","/").concat(new URL(window.location.href).searchParams.get("cftmid")||"{{__CONTAINER_ID__}}"),(m=new URL(window.location.href).searchParams.get(t),f=new RegExp("(^| )".concat("cf_cpid","=([^;]+)")),p=(h=document.cookie.match(f))&&h.pop()||null,m||p||"{{__CAMPAIGN_ID__}}"))}();</script>
 </body>
