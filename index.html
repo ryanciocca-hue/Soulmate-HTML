@@ -944,6 +944,15 @@
 
     // CAPI helper function
     function sendCAPI(eventName, customData) {
+      // Try to get fbc from cookie first, then construct from URL fbclid if available
+      var fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;
+      if (!fbc) {
+        var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+        if (fbclid) {
+          // Construct fbc format: fb.1.timestamp.fbclid
+          fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+        }
+      }
       fetch('/api/meta-capi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -951,7 +960,7 @@
           event_name: eventName,
           event_source_url: window.location.href,
           user_data: {
-            fbc: document.cookie.match(/_fbc=([^;]+)/)?.[1] || null,
+            fbc: fbc,
             fbp: document.cookie.match(/_fbp=([^;]+)/)?.[1] || null
           },
           custom_data: customData
