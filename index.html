@@ -942,17 +942,30 @@
       }
     });
 
+    // Capture and store fbclid immediately on page load (before any redirects or URL changes)
+    (function() {
+      var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+      if (fbclid) {
+        localStorage.setItem('fbclid', fbclid);
+        localStorage.setItem('fbclid_time', Date.now());
+      }
+    })();
+
     // CAPI helper function
     function sendCAPI(eventName, customData) {
-      // Try to get fbc from cookie first, then construct from URL fbclid if available
+      // Try to get fbc from cookie first
       var fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;
+
+      // If no cookie, try to construct from URL or stored fbclid
       if (!fbc) {
-        var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+        var fbclid = new URLSearchParams(window.location.search).get('fbclid') || localStorage.getItem('fbclid');
+        var fbclidTime = localStorage.getItem('fbclid_time') || Date.now();
         if (fbclid) {
           // Construct fbc format: fb.1.timestamp.fbclid
-          fbc = 'fb.1.' + Date.now() + '.' + fbclid;
+          fbc = 'fb.1.' + fbclidTime + '.' + fbclid;
         }
       }
+
       fetch('/api/meta-capi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
