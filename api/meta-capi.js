@@ -27,6 +27,15 @@ export default async function handler(req, res) {
   try {
     const { event_name, event_time, event_source_url, user_data, custom_data } = req.body;
 
+    // Get client IP - prefer IPv6 if available
+    let clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
+    // x-forwarded-for can contain multiple IPs, take the first one (original client)
+    if (clientIP.includes(',')) {
+      clientIP = clientIP.split(',')[0].trim();
+    }
+    // If no IP found, use unknown
+    if (!clientIP) clientIP = 'unknown';
+
     // Build the event payload
     const eventData = {
       event_name,
@@ -34,7 +43,7 @@ export default async function handler(req, res) {
       event_source_url,
       action_source: 'website',
       user_data: {
-        client_ip_address: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
+        client_ip_address: clientIP,
         client_user_agent: req.headers['user-agent'],
         ...user_data
       }
