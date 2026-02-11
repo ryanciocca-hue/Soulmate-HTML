@@ -969,6 +969,7 @@
       fetch('/api/meta-capi', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        keepalive: true, // Ensures request completes even if user navigates away
         body: JSON.stringify({
           event_name: eventName,
           event_source_url: window.location.href,
