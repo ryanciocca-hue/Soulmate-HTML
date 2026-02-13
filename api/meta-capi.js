@@ -25,7 +25,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { event_name, event_time, event_source_url, user_data, custom_data } = req.body;
+    const { event_name, event_id, event_time, event_source_url, user_data, custom_data } = req.body;
 
     // Get client IP - prefer IPv6 if available
     let clientIP = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
@@ -39,6 +39,7 @@ export default async function handler(req, res) {
     // Build the event payload
     const eventData = {
       event_name,
+      event_id, // For deduplication with browser pixel
       event_time: event_time || Math.floor(Date.now() / 1000),
       event_source_url,
       action_source: 'website',

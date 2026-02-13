@@ -13,7 +13,9 @@
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '605945393647072');
-  fbq('track', 'PageView');
+  // Generate unique event_id for deduplication with CAPI
+  window.pageViewEventId = 'pv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  fbq('track', 'PageView', {}, {eventID: window.pageViewEventId});
   </script>
   <noscript><img height="1" width="1" style="display:none"
   src="https://www.facebook.com/tr?id=605945393647072&ev=PageView&noscript=1"
@@ -951,8 +953,8 @@
       }
     })();
 
-    // CAPI helper function
-    function sendCAPI(eventName, customData) {
+    // CAPI helper function with event_id for deduplication
+    function sendCAPI(eventName, customData, eventId) {
       // Try to get fbc from cookie first
       var fbc = document.cookie.match(/_fbc=([^;]+)/)?.[1] || null;
 
@@ -972,6 +974,7 @@
         keepalive: true, // Ensures request completes even if user navigates away
         body: JSON.stringify({
           event_name: eventName,
+          event_id: eventId, // For deduplication with pixel
           event_source_url: window.location.href,
           user_data: {
             fbc: fbc,
@@ -982,25 +985,27 @@
       }).catch(function(err) { console.log('CAPI error:', err); });
     }
 
-    // Send PageView via CAPI on load
-    sendCAPI('PageView');
+    // Send PageView via CAPI on load (using same event_id as pixel for deduplication)
+    sendCAPI('PageView', null, window.pageViewEventId);
 
     // Track InitiateCheckout on CTA clicks (using event delegation to catch all clicks)
     document.addEventListener('click', function(e) {
       var target = e.target.closest('.cta-button, .sticky-cta a');
       if (target) {
+        // Generate unique event_id for deduplication
+        var eventId = 'ic_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         var checkoutData = {
           content_name: 'Sacred Soulmate Bracelet',
           content_category: 'Jewelry',
           value: 37.00,
           currency: 'USD'
         };
-        // Client-side pixel
+        // Client-side pixel with eventID
         if (typeof fbq === 'function') {
-          fbq('track', 'InitiateCheckout', checkoutData);
+          fbq('track', 'InitiateCheckout', checkoutData, {eventID: eventId});
         }
-        // Server-side CAPI
-        sendCAPI('InitiateCheckout', checkoutData);
+        // Server-side CAPI with matching event_id
+        sendCAPI('InitiateCheckout', checkoutData, eventId);
       }
     });
 
